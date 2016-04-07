@@ -1,0 +1,22 @@
+{
+  "jspm": {
+    "name": "app",
+    "dependencies": {
+      "angular": "github:angular/bower-angular@^1.5.3"
+    },
+    "devDependencies": {
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.9"
+    },
+    "overrides": {
+      "github:angular/bower-angular@1.5.3": {
+        "main": "angular",
+        "meta": {
+          "angular.js": {
+            "exports": "angular",
+            "format": "global"
+          }
+        }
+      }
+    }
+  }
+}
