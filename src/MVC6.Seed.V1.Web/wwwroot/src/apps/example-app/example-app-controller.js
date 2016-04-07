@@ -4,7 +4,7 @@ import * as guidUtility from './../../utility/guid-utility';
 
 export class CreateJobController extends Injectable {
     static get $inject() {
-        return ['OspActorAttributeService', 'OspWorkItemService', 'OspServerData'];
+        return ['AngularComponentNamePrefixActorAttributeService', 'AngularComponentNamePrefixWorkItemService', 'AngularComponentNamePrefixServerData'];
     }
 
     constructor(...deps) {
@@ -14,14 +14,14 @@ export class CreateJobController extends Injectable {
         this.selectedGender = null;
         this.selectedLanguage = null;
 
-        this.genders = this.OspActorAttributeService.getGenders();
-        this.ages = this.OspActorAttributeService.getAges();
-        this.purposes = this.OspActorAttributeService.getExpertise();
+        this.genders = this.AngularComponentNamePrefixActorAttributeService.getGenders();
+        this.ages = this.AngularComponentNamePrefixActorAttributeService.getAges();
+        this.purposes = this.AngularComponentNamePrefixActorAttributeService.getExpertise();
         this.ratings = [3, 3.5, 4, 4.5];
 
         let self = this;
-        if (!guidUtility.isEmpty(this.OspServerData.workItemId)) {
-            this.OspWorkItemService.get(this.OspServerData.workItemId)
+        if (!guidUtility.isEmpty(this.AngularComponentNamePrefixServerData.workItemId)) {
+            this.AngularComponentNamePrefixWorkItemService.get(this.AngularComponentNamePrefixServerData.workItemId)
                 .then(workItem => {
                     if (!self.ratings.includes(workItem.minimumRating)) {
                         workItem.minimumRating = self.ratings[0];
@@ -66,6 +66,6 @@ export class CreateJobController extends Injectable {
     }
 
     saveDraft() {
-        this.OspWorkItemService.saveDraft(this.workItem);
+        this.AngularComponentNamePrefixWorkItemService.saveDraft(this.workItem);
     }
 }

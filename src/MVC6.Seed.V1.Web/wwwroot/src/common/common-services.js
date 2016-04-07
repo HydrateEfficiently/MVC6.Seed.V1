@@ -4,11 +4,11 @@ import { UrlService } from './services/url-service';
 
 import { LoggerFactory } from './services/logger-factory';
 
-let commonServices = angular.module('osp.common.services', [])
-    .service('OspHttpCacheService', HttpCacheService)
-    .service('OspHttpService', HttpService)
-    .service('OspUrlService', UrlService)
-    .service('OspLoggerFactory', LoggerFactory)
+let commonServices = angular.module('angular-namespace-prefix.common.services', [])
+    .service('AngularComponentNamePrefixHttpCacheService', HttpCacheService)
+    .service('AngularComponentNamePrefixHttpService', HttpService)
+    .service('AngularComponentNamePrefixUrlService', UrlService)
+    .service('AngularComponentNamePrefixLoggerFactory', LoggerFactory)
     .name;
 
 export { commonServices };

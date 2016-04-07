@@ -3,7 +3,7 @@ import { ExampleAppController } from './example-app-controller';
 import { commonServices } from './../../common/common-services';
 import { commonFilters } from './../../common/common-filters';
 
-let app = angular.module('osp.example-app.app', [
+let app = angular.module('angular-namespace-prefix.example-app.app', [
     commonServices,
     commonFilters
 ])

@@ -2,13 +2,13 @@ import { Injectable } from './../../utility/injectable';
 
 export class UrlService extends Injectable {
     static get $inject() {
-        return ['OspServerData'];
+        return ['AngularComponentNamePrefixServerData'];
     }
 
     constructor(...deps) {
         super(...deps);
 
-        this.serverData = this.OspServerData;
+        this.serverData = this.AngularComponentNamePrefixServerData;
     }
 
     getUrls() {
