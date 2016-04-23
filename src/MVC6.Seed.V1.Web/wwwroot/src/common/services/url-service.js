@@ -2,13 +2,13 @@ import { Injectable } from './../../utility/injectable';
 
 export class UrlService extends Injectable {
     static get $inject() {
-        return ['AngularComponentNamePrefixServerData'];
+        return ['ng_namespace_prefix_upper_ServerData'];
     }
 
     constructor(...deps) {
         super(...deps);
 
-        this.serverData = this.AngularComponentNamePrefixServerData;
+        this.serverData = this.ng_namespace_prefix_upper_ServerData;
     }
 
     getUrls() {

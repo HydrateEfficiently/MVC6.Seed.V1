@@ -4,7 +4,7 @@ import * as guidUtility from './../../utility/guid-utility';
 
 export class CreateJobController extends Injectable {
     static get $inject() {
-        return ['AngularComponentNamePrefixActorAttributeService', 'AngularComponentNamePrefixWorkItemService', 'AngularComponentNamePrefixServerData'];
+        return ['ng_namespace_prefix_upper_ActorAttributeService', 'ng_namespace_prefix_upper_WorkItemService', 'ng_namespace_prefix_upper_ServerData'];
     }
 
     constructor(...deps) {
@@ -14,14 +14,14 @@ export class CreateJobController extends Injectable {
         this.selectedGender = null;
         this.selectedLanguage = null;
 
-        this.genders = this.AngularComponentNamePrefixActorAttributeService.getGenders();
-        this.ages = this.AngularComponentNamePrefixActorAttributeService.getAges();
-        this.purposes = this.AngularComponentNamePrefixActorAttributeService.getExpertise();
+        this.genders = this.ng_namespace_prefix_upper_ActorAttributeService.getGenders();
+        this.ages = this.ng_namespace_prefix_upper_ActorAttributeService.getAges();
+        this.purposes = this.ng_namespace_prefix_upper_ActorAttributeService.getExpertise();
         this.ratings = [3, 3.5, 4, 4.5];
 
         let self = this;
-        if (!guidUtility.isEmpty(this.AngularComponentNamePrefixServerData.workItemId)) {
-            this.AngularComponentNamePrefixWorkItemService.get(this.AngularComponentNamePrefixServerData.workItemId)
+        if (!guidUtility.isEmpty(this.ng_namespace_prefix_upper_ServerData.workItemId)) {
+            this.ng_namespace_prefix_upper_WorkItemService.get(this.ng_namespace_prefix_upper_ServerData.workItemId)
                 .then(workItem => {
                     if (!self.ratings.includes(workItem.minimumRating)) {
                         workItem.minimumRating = self.ratings[0];
@@ -66,6 +66,6 @@ export class CreateJobController extends Injectable {
     }
 
     saveDraft() {
-        this.AngularComponentNamePrefixWorkItemService.saveDraft(this.workItem);
+        this.ng_namespace_prefix_upper_WorkItemService.saveDraft(this.workItem);
     }
 }

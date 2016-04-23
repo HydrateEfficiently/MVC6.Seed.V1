@@ -2,13 +2,13 @@ import { Injectable } from './../../utility/injectable';
 
 export class HttpService extends Injectable {
     static get $inject() {
-        return ['$http', 'AngularComponentNamePrefixLoggerFactory'];
+        return ['$http', 'ng_namespace_prefix_upper_LoggerFactory'];
     }
 
     constructor(...deps) {
         super(...deps);
 
-        this.logger = this.AngularComponentNamePrefixLoggerFactory.createLogger('HttpService');
+        this.logger = this.ng_namespace_prefix_upper_LoggerFactory.createLogger('HttpService');
     }
 
     get(...args) {

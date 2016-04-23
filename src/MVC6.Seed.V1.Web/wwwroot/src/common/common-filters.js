@@ -6,7 +6,7 @@ function sanitizeHtml($sce) {
 }
 
 let commonFilters = angular.module('rr.common.filters', [])
-    .filter('angular-namespace-prefixSanitizeHtml', sanitizeHtml)
+    .filter('ng_namespace_prefix_lower_SanitizeHtml', sanitizeHtml)
     .name;
 
 export { commonFilters };

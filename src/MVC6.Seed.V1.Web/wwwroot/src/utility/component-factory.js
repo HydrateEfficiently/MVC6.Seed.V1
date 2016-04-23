@@ -5,9 +5,9 @@ function camelCaseToDashed(str) {
 }
 
 export function componentFactory(name, controller, deps = [], directiveOptions = {}) {
-    let prefixedName = `angular-namespace-prefix${name.charAt(0).toUpperCase()}${name.substring(1)}`; 
+    let prefixedName = `ng_namespace_prefix_lower_${name.charAt(0).toUpperCase()}${name.substring(1)}`; 
     let dashedName = camelCaseToDashed(name);
-    let moduleName = `angular-namespace-prefix.components.${dashedName}`;
+    let moduleName = `ng_namespace_prefix_lower_.components.${dashedName}`;
     let templateUrl = `/${paths.components}${dashedName}/${dashedName}.html`;
 
     let options = {
