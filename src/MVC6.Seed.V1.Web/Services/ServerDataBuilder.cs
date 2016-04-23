@@ -13,6 +13,7 @@ namespace MVC6.Seed.V1.Web.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICurrentUserProvider _currentUserProvider;
+        private readonly ActionEnumerator _actionEnumerator;
 
         private Dictionary<string, object> _data = new Dictionary<string, object>();
         private bool _includeCurrentUser = false;
@@ -20,10 +21,12 @@ namespace MVC6.Seed.V1.Web.Services
 
         public ServerDataBuilder(
             IHttpContextAccessor httpContextAccessor,
-            ICurrentUserProvider currentUserProvider)
+            ICurrentUserProvider currentUserProvider,
+            ActionEnumerator actionEnumerator)
         {
             _httpContextAccessor = httpContextAccessor;
             _currentUserProvider = currentUserProvider;
+            _actionEnumerator = actionEnumerator;
         }
 
         public ServerDataBuilder IncludeData(string key, object value)
@@ -74,7 +77,7 @@ namespace MVC6.Seed.V1.Web.Services
         {
             if (_includeCurrentUser)
             {
-                var user = await _currentUserProvider.GetAsync();
+                var user = await _currentUserProvider.GetUserResultAsync();
                 if (user != null)
                 {
                     _data.Add("User", user);
@@ -86,7 +89,7 @@ namespace MVC6.Seed.V1.Web.Services
         {
             if (_controllers.Count > 0)
             {
-                _data.Add("Urls", _httpContextAccessor.GetUrlHelper().EnumerateUrls(_controllers.ToArray()));
+                _data.Add("Actions", _actionEnumerator.Enumerate(_controllers.ToArray()));
             }
         }
 

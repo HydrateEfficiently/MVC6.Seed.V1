@@ -1,0 +1,22 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Data.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+@foreach (string entityNamespace in Model.EntityNamespaces)
+{
+@:using @(entityNamespace);
+}
+using @(Model.UtilityNamespace);
+
+namespace @Model.ServicesNamespace
+{
+    public partial class ApplicationDbContext : IdentityDbContext@("<ApplicationUser>")
+    {
+        private void OnModelCreatingHook(ModelBuilder builder)
+        {
+        }
+    }
+}

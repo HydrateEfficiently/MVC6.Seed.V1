@@ -1,0 +1,36 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Data.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+@foreach (string entityNamespace in Model.EntityNamespaces)
+{
+@:using @(entityNamespace);
+}
+using @(Model.UtilityNamespace);
+
+namespace @Model.ServicesNamespace
+{
+    public partial class ApplicationDbContext : IdentityDbContext@("<ApplicationUser>")
+    {
+        @foreach(MVC6.Seed.V1.CodeGeneration.Generators.DataContext.EntityDeclarationModel e in Model.GeneratedEntities)
+        {
+        @:
+        @:public DbSet@($"<{e.TypeName}>") @e.TableName { get; set; }
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            @foreach(MVC6.Seed.V1.CodeGeneration.Generators.DataContext.EntityDeclarationModel e in Model.GeneratedEntities)
+            {
+            @:builder.Entity@($"<{e.TypeName}>")().HasTableName(nameof(@(e.TableName)));
+            }
+
+            OnModelCreatingHook(builder);
+        }
+    }
+}

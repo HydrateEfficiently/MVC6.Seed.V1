@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using MVC6.Seed.V1.Framework.Services;
 using MVC6.Seed.V1.Web.Services.Framework;
 using Azn.RiskApp.Web.Services.Framework._Dev;
+using MVC6.Seed.V1.Web.Services;
 
 namespace MVC6.Seed.V1.Web
 {
@@ -69,6 +70,9 @@ namespace MVC6.Seed.V1.Web
             services.AddTransient<IIdentityResolver, IdentityResolver>();
             services.AddTransient<IEmailService, DevCsvEmailService>();
             services.AddTransient<IUrlResolver, UrlResolver>();
+
+            services.AddTransient<ServerDataBuilder>();
+            services.AddTransient<ActionEnumerator>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

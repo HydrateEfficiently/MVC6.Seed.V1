@@ -1,0 +1,21 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+@{ 
+    var mappingTypeArgs = $"<{Model.EntityName}, {Model.DtoName}>";
+}
+using AutoMapper;
+using AutoMapper.Mappers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using @(Model.EntityNamespaceName);
+
+namespace @Model.NamespaceName {
+    public partial class @Model.DtoName
+    {
+        private static void MappingsHook(IMappingExpression@(mappingTypeArgs) mappingExpression)
+        {
+        }
+    }
+}
+

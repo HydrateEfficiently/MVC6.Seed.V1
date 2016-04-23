@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace MVC6.Seed.V1.Services.Identity.Models
 {
-    public class UserSummary
+    public class UserResult
     {
         private static MappingEngine __mappingEngine;
 
-        static UserSummary()
+        static UserResult()
         {
             var configuration = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.Mappers);
             var mappingEngine = new MappingEngine(configuration);
-            configuration.CreateMap<ApplicationUser, UserSummary>();
+            configuration.CreateMap<ApplicationUser, UserResult>();
             __mappingEngine = mappingEngine;
         }
 
@@ -26,7 +26,7 @@ namespace MVC6.Seed.V1.Services.Identity.Models
 
         public string UserName { get; set; }
 
-        public UserSummary(ApplicationUser user)
+        public UserResult(ApplicationUser user)
         {
             __mappingEngine.Map(user, this);
         }

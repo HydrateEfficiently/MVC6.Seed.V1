@@ -37,8 +37,11 @@ namespace MVC6.Seed.V1.Services
             // Identity
             services.AddScoped<SignInManager<ApplicationUser>, ApplicationSignInManager>();
             services.AddTransient<IRegistrationService, RegistrationService>();
-            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<ISessionService, SessionService>();
             services.AddTransient<ICurrentUserProvider, CurrentUserProvider>();
+            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IRoleResolver, RoleResolver>();
+            services.AddScoped<IAuditFactory, AuditFactory>();
         }
     }
 }

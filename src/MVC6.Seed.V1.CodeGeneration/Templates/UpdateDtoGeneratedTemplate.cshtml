@@ -1,0 +1,37 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+@{
+    var mappingTypeArgs = $"<{Model.DtoName}, {Model.EntityName}>";
+}
+using AutoMapper;
+using AutoMapper.Mappers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using @(Model.EntityNamespaceName);
+
+namespace @Model.NamespaceName {
+    public partial class @Model.DtoName
+    {
+        private static MappingEngine __mappingEngine;
+
+        static @(Model.DtoName)()
+        {
+            var configuration = new ConfigurationStore(new TypeMapFactory(), MapperRegistry.Mappers);
+            var mappingEngine = new MappingEngine(configuration);
+            var mappingExpression = configuration.CreateMap@(mappingTypeArgs)();
+            MappingsHook(mappingExpression);
+            __mappingEngine = mappingEngine;
+        }
+        @foreach (MVC6.Seed.V1.CodeGeneration.Services.Properties.PropertyDeclarationModel property in Model.Properties)
+        {
+        @:
+        @:public @property.PropertyTypeName @property.PropertyName { get; set; }
+        }
+
+        public @(Model.EntityName) Map()
+        {
+            return __mappingEngine.Map@(mappingTypeArgs)(this);
+        }
+    }
+}

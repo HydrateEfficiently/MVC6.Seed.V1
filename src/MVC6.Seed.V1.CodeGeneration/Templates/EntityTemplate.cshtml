@@ -1,0 +1,70 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+@{ 
+    string interfaces = string.Empty;
+    if (Model.Interfaces.Count > 0)
+    {
+        interfaces = " : " + string.Join(", ", Model.Interfaces);
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using @(Model.FrameworkEntitiesNamespace).Identity;
+using @(Model.GenerationCoreNamespace);
+
+namespace @(Model.FrameworkEntityNamespace)
+{
+    [GeneratedEntity(TableName = "@(Model.TableName)")]
+    public class @(Model.EntityName)@(interfaces)
+    {
+        @foreach (MVC6.Seed.V1.CodeGeneration.Services.Properties.PropertyDeclarationModel p in Model.Properties)
+        {
+        @:
+        foreach (string attribute in p.Attributes)
+        {
+        @:@attribute
+        }
+        string output = p.AccessModifier;
+            if (p.HasExtraModifier)
+            {
+                output += " " + string.Join(" ", p.ExtraModifiers);
+            }
+            output += " " + p.PropertyTypeName + " " + p.PropertyName;
+        @:@(output) { get; set; }
+        }
+
+        @if (Model.HasAudit)
+        {
+        @:#region Audits
+        foreach (MVC6.Seed.V1.CodeGeneration.Services.Audits.AuditDeclarationModel audit in Model.Audits)
+        {
+        @:
+        @:[DtoGenerateIgnore(DtoType.Create, DtoType.Update)]
+        @:public @(audit.IsNullable ? "DateTime?" : "DateTime") @audit.Name { get; set; }
+        @:
+        @:[DtoGenerateIgnore(DtoType.Create, DtoType.Update)]
+        @:public virtual ApplicationUser @(audit.Name)By { get; set; }
+        @:
+        @:[DtoGenerateIgnore(DtoType.Create, DtoType.Update)]
+        @:public string @(audit.Name)ById { get; set; }
+        }
+
+        foreach (MVC6.Seed.V1.CodeGeneration.Services.Audits.AuditDeclarationModel audit in Model.Audits)
+        {
+        if (!audit.IsFromInterface)
+        {
+        @:
+        @:public @Model.EntityName Audit@(audit.Name)(Audit audit)
+        @:{
+        @:    @audit.Name = audit.Actioned;
+        @:    @(audit.Name)ById = audit.ActionedById;
+        @:    return this;
+        @:}
+        }
+        }
+        @:
+        @:#endregion
+        }
+    }
+}

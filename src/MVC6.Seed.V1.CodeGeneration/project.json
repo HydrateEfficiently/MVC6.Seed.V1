@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0-*",
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "AutoMapper": "4.1.1",
+    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
+    "Microsoft.AspNet.Mvc.Core": "6.0.0-rc1-final",
+    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+    "Microsoft.Extensions.CodeGeneration": "1.0.0-rc1-final",
+    "Microsoft.Extensions.CodeGeneration.Core": "1.0.0-rc1-final",
+    "Microsoft.Extensions.CodeGeneration.EntityFramework": "1.0.0-rc1-final",
+    "Microsoft.Extensions.CodeGeneration.Templating": "1.0.0-rc1-final",
+    "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
+    "System.Linq": "4.0.1-beta-23516",
+    "MVC6.Seed.V1.CodeGeneration.Core": "1.0.0-*",
+    "MVC6.Seed.V1.Framework": "1.0.0-*",
+    "MVC6.Seed.V1.Services": "1.0.0-*",
+    "MVC6.Seed.V1.Web": "1.0.0-*",
+    "MVC6.Seed.V1.Initializer": "1.0.0-*"
+  },
+
+  "commands": {
+    "gen": "Microsoft.Extensions.CodeGeneration",
+    "web": "Microsoft.AspNet.Server.Kestrel"
+  },
+
+  "frameworks": {
+    "dnx451": { }
+  },
+
+  "publishExclude": [
+    "**.user",
+    "**.vspscc"
+  ]
+}

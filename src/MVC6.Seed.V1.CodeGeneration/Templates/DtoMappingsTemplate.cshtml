@@ -1,0 +1,46 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+@{ 
+    var tSourceTDestinationTypeArgs = "<TSource, TDestination>";
+    var tDestinationObjectTypeArgs = "<TDestination, object>";
+    var funcTDestinationObjectTypeArg = $"<Func{tDestinationObjectTypeArgs}>";
+    var tSourceEnityTypeArgs = $"<TSource, {Model.EntityName}>";
+    var tSourceCreateDtoTypeArgs = $"<TSource, {Model.CreateDtoName}>";
+}
+using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using @(Model.EntityNamespaceName);
+using @(Model.ModelsNamespaceName);
+
+namespace @Model.NamespaceName
+{
+    public static class @(Model.ClassName)
+    {
+        public static IMappingExpression@(tSourceTDestinationTypeArgs) For@(Model.EntityName)@(tSourceTDestinationTypeArgs)(
+            this IMappingExpression@(tSourceTDestinationTypeArgs) self,
+            Expression@(funcTDestinationObjectTypeArg) destinationMember,
+            Func@(tSourceEnityTypeArgs) source)
+        {
+            return self.ForMember(
+                destinationMember,
+                options => options.MapFrom(src =>
+                    source(src) == null ? null : new @(Model.ReadDtoName)(source(src))
+                ));
+        }
+
+        public static IMappingExpression@(tSourceTDestinationTypeArgs) To@(Model.EntityName)@(tSourceTDestinationTypeArgs)(
+            this IMappingExpression@(tSourceTDestinationTypeArgs) self,
+            Expression@(funcTDestinationObjectTypeArg) destinationMember,
+            Func@(tSourceCreateDtoTypeArgs) source)
+        {
+            return self.ForMember(
+                destinationMember,
+                options => options.MapFrom(src =>
+                    source(src) == null ? null : source(src).Map()
+                ));
+        }
+    }
+}

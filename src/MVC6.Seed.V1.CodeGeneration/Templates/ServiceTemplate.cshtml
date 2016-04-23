@@ -1,0 +1,110 @@
+﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
+@{
+    var interfaceServiceName = $"I{Model.ServiceName}";
+    var entityLamdbaAlias = Model.EntityName.ToLower()[0].ToString();
+    var entityVariableAlias = entityLamdbaAlias + Model.EntityName.Substring(1);
+    var readDtoAsTypeArg = $"<{Model.ReadEntityDtoName}>";
+    var readDtoEnumerableAsTypeArg = $"<IEnumerable{readDtoAsTypeArg}>";
+}
+using Microsoft.AspNet.Identity;
+using Microsoft.Data.Entity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using @(Model.EntityNamespaceName);
+using @(Model.EntitiesNamespaceName);
+using @(Model.FrameworkServicesNamespaceName);
+using @(Model.ServicesNamespaceName).Identity;
+using @(Model.ServiceModelsNamespaceName);
+
+namespace @Model.ServiceNamespaceName
+{
+    public interface @interfaceServiceName {
+        @if (@Model.CanList)
+        {
+        @:Task@(readDtoEnumerableAsTypeArg) ListAsync(string userId);
+        }
+
+        Task@(readDtoAsTypeArg) GetAsync(@(Model.EntityIdTypeName) id);
+
+        Task@(readDtoAsTypeArg) CreateAsync(@(Model.CreateEntityDtoName) create);
+        @if (@Model.CanUpdate)
+        {
+        @:
+        @:Task@(readDtoAsTypeArg) UpdateAsync(@(@Model.UpdateEntityDtoName) update);
+        }
+        @if (@Model.CanDelete)
+        {
+        @:
+        @:Task DeleteAsync(@(@Model.EntityIdTypeName) id);
+        }
+    }
+
+    public class @Model.ServiceName : @interfaceServiceName
+    {
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IIdentityResolver _identityResolver;
+        private readonly IAuditFactory _auditFactory;
+        
+        public @(Model.ServiceName)(
+            ApplicationDbContext dbContext,
+            IIdentityResolver identityResolver,
+            IAuditFactory auditFactory)
+        {
+            _dbContext = dbContext;
+            _identityResolver = identityResolver;
+            _auditFactory = auditFactory;
+        }
+        @if (@Model.CanList)
+        {
+        @:
+        @:public async Task@(readDtoEnumerableAsTypeArg) ListAsync(string userId)
+        @:{
+            @:return (await _dbContext.@(Model.DbSetPropertyName)
+                @:.Where(@entityLamdbaAlias => @(entityLamdbaAlias).CreatedById == userId)
+                @:.ToListAsync()).Select(@entityLamdbaAlias => new @(Model.ReadEntityDtoName)(@entityLamdbaAlias));
+        @:}
+        }
+
+        public async Task@(readDtoAsTypeArg) GetAsync(@(Model.EntityIdTypeName) id)
+        {
+            var result = await _dbContext.@(Model.DbSetPropertyName)
+                .Where(@entityLamdbaAlias => @(entityLamdbaAlias).Id == id)
+                .FirstOrDefaultAsync();
+            return new @(Model.ReadEntityDtoName)(result);
+        }
+
+        public async Task@(readDtoAsTypeArg) CreateAsync(@(Model.CreateEntityDtoName) create)
+        {
+            var @entityVariableAlias = create.Map();
+            var audit = _auditFactory.CreateAudit();
+            @(entityVariableAlias).AuditCreated(audit).AuditUpdated(audit);
+            _dbContext.@(Model.DbSetPropertyName).Add(@entityVariableAlias);
+            await _dbContext.SaveChangesAsync();
+            return new @(Model.ReadEntityDtoName)(@entityVariableAlias);
+        }
+        @if (@Model.CanUpdate)
+        {
+        @:
+        @:public async Task@(readDtoAsTypeArg) UpdateAsync(@(@Model.UpdateEntityDtoName) update)
+        @:{
+            @:var @entityVariableAlias = update.Map().AuditUpdated(_auditFactory.CreateAudit());
+            @:await _dbContext.SaveChangesAsync();
+            @:return new @(Model.ReadEntityDtoName)(@entityVariableAlias);
+        @:}
+        }
+        @if (@Model.CanDelete)
+        {
+        @:
+        @:public async Task DeleteAsync(@(@Model.EntityIdTypeName) id)
+        @:{
+            @:var result = await _dbContext.@(Model.DbSetPropertyName)
+                @:.Where(@entityLamdbaAlias => @(entityLamdbaAlias).Id == id)
+                @:.FirstOrDefaultAsync();
+            @:result.AuditDeleted(_auditFactory.CreateAudit());
+            @:await _dbContext.SaveChangesAsync();
+        @:}
+        }
+    }
+}
