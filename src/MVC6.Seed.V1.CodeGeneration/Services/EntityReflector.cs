@@ -133,7 +133,7 @@ namespace MVC6.Seed.V1.CodeGeneration.Services
             {
                 string entitiesNamespaceName = _namespaceService.GetFrameworkEntitiesNamespace();
                 string entityFullName = GetEntityType(entityName).FullName;
-                string entityRelativeFullName = entityFullName.Replace(entitiesNamespaceName, string.Empty);
+                string entityRelativeFullName = entityFullName.Replace(entitiesNamespaceName + ".", string.Empty);
                 var entityNameParts = entityRelativeFullName.Split('.');
 
                 if (entityNameParts.Count() != 2)

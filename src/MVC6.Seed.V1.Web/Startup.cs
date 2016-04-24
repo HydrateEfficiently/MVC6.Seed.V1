@@ -17,6 +17,7 @@ using MVC6.Seed.V1.Framework.Services;
 using MVC6.Seed.V1.Web.Services.Framework;
 using Azn.RiskApp.Web.Services.Framework._Dev;
 using MVC6.Seed.V1.Web.Services;
+using Microsoft.AspNet.StaticFiles;
 
 namespace MVC6.Seed.V1.Web
 {
@@ -104,7 +105,10 @@ namespace MVC6.Seed.V1.Web
 
             app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                ServeUnknownFileTypes = true
+            });
 
             app.UseIdentity();
 

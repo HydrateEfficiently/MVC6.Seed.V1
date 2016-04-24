@@ -25,6 +25,11 @@ namespace MVC6.Seed.V1.CodeGeneration.Services
             NamespaceService namespaceService)
         {
             _namespaceService = namespaceService;
+
+            // Force load of projects
+            MVC6.Seed.V1.Services.Startup loadServices;
+            MVC6.Seed.V1.Framework.Models.Identity.ApplicationUser loadFramework;
+            MVC6.Seed.V1.Web.Startup loadWeb;
         }
 
         public Assembly GetAssembly(LocalProjectType project)

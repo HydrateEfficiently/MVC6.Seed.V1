@@ -11,7 +11,9 @@ namespace MVC6.Seed.V1.CodeGeneration.Utility
     {
         public static bool IsAsync(this MethodInfo methodInfo)
         {
-            return methodInfo.GetCustomAttribute<AsyncStateMachineAttribute>() != null;
+            var returnType = methodInfo.ReturnType;
+            return returnType.Equals(typeof(Task)) ||
+                returnType.BaseType.Equals(typeof(Task));
         }
     }
 }

@@ -48,7 +48,7 @@ namespace MVC6.Seed.V1.CodeGeneration.Services
             {
                 string servicesNamespaceName = _namespaceService.GetServicesNamespace();
                 string serviceFullName = GetServiceType(serviceName).FullName;
-                string serviceRelativeFullName = serviceFullName.Replace(servicesNamespaceName, string.Empty);
+                string serviceRelativeFullName = serviceFullName.Replace(servicesNamespaceName + ".", string.Empty);
                 var serviceNameParts = serviceRelativeFullName.Split('.');
 
                 if (serviceNameParts.Count() != 2)

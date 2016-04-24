@@ -74,9 +74,18 @@ namespace MVC6.Seed.V1.CodeGeneration.Generators.ApiController
             var service = _memberDeclarationModelFactory.CreateInjectedService(serviceType);
             var injectedServices = new List<MemberDeclarationModel>() { service };
 
-            var servicesToInject = _model.Inject.Split(',')
-                .Select(s => GetProjectTypeAndServiceName(s))
-                .Union(DefaultInjectedServices);
+            IEnumerable<ProjectTypeAndServiceName> servicesToInject;
+            if (string.IsNullOrWhiteSpace(_model.Inject))
+            {
+                servicesToInject = DefaultInjectedServices;
+            }
+            else
+            {
+                servicesToInject = _model.Inject.Split(',')
+                    .Select(s => GetProjectTypeAndServiceName(s))
+                    .Union(DefaultInjectedServices);
+            }
+
             foreach (var serviceToInject in servicesToInject)
             {
                 var assembly = _assemblyProvider.GetAssembly(serviceToInject.ProjectType);
@@ -95,10 +104,15 @@ namespace MVC6.Seed.V1.CodeGeneration.Generators.ApiController
                 .Select(mi => CreateActionDeclarationModel(mi));
 
             const string ServiceSuffix = "Service";
-            string serviceBaseName = serviceName.EndsWith(ServiceSuffix) ?
-                serviceName.Substring(0, serviceName.Length - "Service".Length) :
-                serviceName;
-
+            string serviceBaseName = serviceName;
+            if (serviceBaseName.EndsWith(ServiceSuffix))
+            {
+                serviceBaseName = serviceBaseName.Substring(0, serviceBaseName.Length - "Service".Length);
+            }
+            if (serviceType.IsInterface)
+            {
+                serviceBaseName = serviceBaseName.Substring(1);
+            }
             string apiControllerName = $"{serviceBaseName}ApiController";
 
             var templateModel = new ApiControllerTemplateModel()
@@ -158,14 +172,17 @@ namespace MVC6.Seed.V1.CodeGeneration.Generators.ApiController
                 {
                     throw new InvalidOperationException($"Async method {serviceMethodBaseName} must end in '{AsyncSuffix}'");
                 }
-                serviceMethodBaseName += AsyncSuffix;
+                serviceMethodBaseName = serviceMethodBaseName.Substring(0, serviceMethodBaseName.Length - AsyncSuffix.Length);
             }
 
             var serviceMethodParams = serviceMethod.GetParameters();
             // Assume that if the service takes one class, that the it will be included via an HTTP POST request's body.
             // Else, the arguments to the service will be included in an HTTP GET request as route values.
             bool serviceMethodRequiresModel = serviceMethodParams.Count() == 1 &&
-                serviceMethodParams.First().GetType().IsClass;
+                serviceMethodParams.Any(p =>
+                    !p.ParameterType.Equals(typeof(string)) &&
+                    !p.ParameterType.Equals(typeof(int)) &&
+                    !p.ParameterType.Equals(typeof(Guid)));
 
             IEnumerable<string> resolvedParameterNames;
             var parametersNames = serviceMethodParams.Select(p => p.Name);
@@ -178,7 +195,7 @@ namespace MVC6.Seed.V1.CodeGeneration.Generators.ApiController
                 var serviceMethodParam = serviceMethodParams.First();
                 resolvedParameterNames = new List<string>()
                 {
-                    $"[FromBody] {serviceMethodParam.ParameterType.Name} {serviceMethodParam.Name}"
+                    $"[FromBody] {serviceMethodParam.ParameterType.GetRawOutputName()} {serviceMethodParam.Name}"
                 };
             }
             else
@@ -186,11 +203,16 @@ namespace MVC6.Seed.V1.CodeGeneration.Generators.ApiController
                 attributes.Add($"[HttpGet]");
                 var routeTemplateParts = new List<string>() { routeName };
                 routeTemplateParts.AddRange(parametersNames.Select(p => $"{{{p}}}"));
-                attributes.Add($"[Route(\"{Path.Combine(routeTemplateParts.ToArray())}\")]");
+                attributes.Add($"[Route(\"{string.Join("/", routeTemplateParts)}\")]");
                 resolvedParameterNames = serviceMethodParams
-                    .Select(p => $"{p.ParameterType.Name} {p.Name}");
+                    .Select(p => $"{p.ParameterType.GetRawOutputName()} {p.Name}");
             }
-            
+
+            var serviceReturnType = serviceMethod.ReturnType;
+            bool serviceReturnsValue =
+                !serviceReturnType.Equals(typeof(Task)) &&
+                !serviceReturnType.Equals(typeof(void));
+
             return new ActionDeclarationModel()
             {
                 Attributes = attributes,
@@ -202,7 +224,7 @@ namespace MVC6.Seed.V1.CodeGeneration.Generators.ApiController
                 ServiceMethod = new ServiceMethodInvocationModel()
                 {
                     BaseName = serviceMethodBaseName,
-                    ReturnTypeName = serviceMethod.ReturnType.Name,
+                    ReturnsValue = serviceReturnsValue,
                     IsAsync = isAsync
                 }
             };

@@ -1,5 +1,5 @@
 ﻿@inherits Microsoft.Extensions.CodeGeneration.Templating.RazorTemplateBase
-@{ 
+@{
     var typedModel = Model as MVC6.Seed.V1.CodeGeneration.Generators.ApiController.ApiControllerTemplateModel;
     Model = null;
     var numberOfServices = typedModel.InjectedServices.Count();
@@ -11,84 +11,84 @@ using System.Linq;
 using System.Threading.Tasks;
 @foreach (string namespaceName in typedModel.UsingNamespaceNames)
 {
-@:using @(namespaceName);
+    @:using @(namespaceName);
 }
-
 
 namespace @typedModel.NamespaceName
 {
-    public class @typedModel.ClassName : Controller {
-        @foreach (var serviceDeclarationModel in typedModel.InjectedServices)
-        {
-            @:private readonly @serviceDeclarationModel.TypeName @serviceDeclarationModel.LocalName;
+    public class @typedModel.ClassName : Controller
+    {
+    @foreach (var serviceDeclarationModel in typedModel.InjectedServices)
+    {
+        @:private readonly @serviceDeclarationModel.TypeName @serviceDeclarationModel.LocalName;
         }
 
-        public @(typedModel.ClassName)(
-            @for (int i = 0; i < numberOfServices; i++)
-            {
-            var serviceDeclarationModel = typedModel.InjectedServices[i];
-            string output = $"{serviceDeclarationModel.TypeName} {serviceDeclarationModel.ArgumentName}";
-            if (i == numberOfServices - 1)
-            {
-                output += ")";
-            }
-            else
-            {
-                output += ",";
-            }
-            @:@(output)
-            }
+    public @(typedModel.ClassName)(
+    @for (int i = 0; i < numberOfServices; i++)
+    {
+        var serviceDeclarationModel = typedModel.InjectedServices[i];
+        string output = $"{serviceDeclarationModel.TypeName} {serviceDeclarationModel.ArgumentName}";
+        if (i == numberOfServices - 1)
         {
-            @foreach (var serviceDeclarationModel in typedModel.InjectedServices)
-            {
-            @:@(serviceDeclarationModel.LocalName) = @(serviceDeclarationModel.ArgumentName);
-            }
+            output += ")";
         }
-        @foreach (var action in typedModel.Actions)
+        else
         {
-            bool isAsync = action.ServiceMethod.IsAsync;
-
-            string baseMethodSignature = action.Method.AccessModifier;
-            if (isAsync) {
-                baseMethodSignature += " async";
+            output += ",";
+        }
+        @:@(output)
             }
-            baseMethodSignature += $" {action.Method.ReturnTypeName} {action.ServiceMethod.BaseName}";
-
-            bool seviceReturnsValue = !string.IsNullOrEmpty(action.ServiceMethod.ReturnTypeName);
-            string serviceMethodInvocationLine = string.Empty;
-            if (seviceReturnsValue)
+    {
+    @foreach (var serviceDeclarationModel in typedModel.InjectedServices)
             {
-                serviceMethodInvocationLine += "var result =";
+        @:@(serviceDeclarationModel.LocalName) = @(serviceDeclarationModel.ArgumentName);
             }
-            if (isAsync)
-            {
-                serviceMethodInvocationLine += " await";
-            }
-            serviceMethodInvocationLine +=
-                $"{typedModel.Service.LocalName}.{action.ServiceMethod.Name}" + 
-                $"({string.Join(", ", action.Method.ParameterNames)});";
+    }
+    @foreach (var action in typedModel.Actions)
+    {
+        bool isAsync = action.ServiceMethod.IsAsync;
 
+        string baseMethodSignature = action.Method.AccessModifier;
+        if (isAsync)
+        {
+            baseMethodSignature += " async";
+        }
+        baseMethodSignature += $" {action.Method.ReturnTypeName} {action.ServiceMethod.BaseName}";
+
+        string serviceMethodInvocationLine = string.Empty;
+        if (action.ServiceMethod.ReturnsValue)
+        {
+            serviceMethodInvocationLine += "var result = ";
+        }
+        if (isAsync)
+        {
+            serviceMethodInvocationLine += "await";
+        }
+        serviceMethodInvocationLine +=
+            $" {typedModel.Service.LocalName}.{action.ServiceMethod.Name}" +
+            $"({string.Join(", ", action.Method.ParameterNames)});";
+
+        @:
         @foreach (string attribute in action.Attributes)
         {
-        @:@attribute
+            @:@attribute
         }
-        @:
         @:@(baseMethodSignature)(@string.Join(", ", action.Method.Parameters))
         @:{
-            @:@serviceMethodInvocationLine
-            @if (seviceReturnsValue)
-            {
+        @:@serviceMethodInvocationLine
+        @if (action.ServiceMethod.ReturnsValue)
+        {
             @:if (result == null)
             @:{
-                @:HttpNotFound();
+            @:HttpNotFound();
             @:}
             @:return new ObjectResult(result);
             }
-            else
-            {
+        else
+        {
             @:return Ok();
             }
         @:}
         }
     }
-}
+    }
